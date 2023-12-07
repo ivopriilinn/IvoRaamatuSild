@@ -3,6 +3,10 @@ const port = 8080
 const swaggerUi = require('swagger-ui-express')
 const swaggerDocument = require('./docs/swagger.json')
 
+app.get('/books', (req, res) => {
+    res.send(["Jane Eyre", "The Bear and The Nightingale", "Good Omens"])
+})
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.listen(port, () => {
