@@ -1,0 +1,77 @@
+openapi: 3.0.2
+info:
+    title: RaamatuSild
+    version: 1.0.0
+    description: >-
+        "### This is a Swagger UI for our Books API  \n\n### Error handling\nErrors are presented using the
+        HTTP status codes 400-599. The response include a more detailed explanation about the error in the
+        body.\n\n```\n{\n  \"error\": \"Cleartext explanation of the error that occurred\"\n}\n```\n\n###
+        Generic API errors\nThese error responses can be returned by any of the described endpoints.\n\n| HTTP
+        status  |  Description |\n|---|---|\n| 400| Bad input parameters or invalid request. More information
+        can be found in the response body.\n| 401| The consumer does not have access to the requested resource
+        or the provided token is not valid.\n| 404| The requested resource can not be found or the user does
+        not have access to the resource.\n| 5XX| A server error has occurred while processing the request."
+           
+paths:
+    /books:
+        description: ''
+        get:
+            tags:
+                - books
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: string
+                            examples:
+                                List of books:
+                                    value:
+                                        - Jane Eyre
+                                        - The Bear and The Nightingale
+                                        - Good Omens
+                    description: Returns a list of books
+            summary: Get a list of all books
+            description: Returns a list of all books in API
+    '/books/{id}':
+        get:
+            tags:
+                - details
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: string
+                            examples:
+                                Full details of a book:
+                                    value: >-
+                                        {id: 3, name:"The Bear and The Nightingale", author: "Katherine
+                                        Arden", year: 2017, pages: 3014}
+                    description: Returns full details of a given id book
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                Game /w+ was not found:
+                                    value: Game \\w+ was not found in game array.
+                    description: Book was not found in books array
+            operationId: id
+            description: Returns full details of a given id book
+components:
+    schemas:
+        error:
+            title: Root Type for error
+            description: ''
+            type: object
+            properties:
+                error:
+                    type: string
+            example:
+                error: Error message.

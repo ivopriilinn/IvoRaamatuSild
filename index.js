@@ -1,7 +1,8 @@
 const app = require('express')()
 const port = 8080
 const swaggerUi = require('swagger-ui-express')
-const swaggerDocument = require('./docs/swagger.json')
+const yamljs = require('yamljs')
+const swaggerDocument = yamljs.load('./docs/swagger.yaml')
 
 const books = [
     {id: 1, name:"Rikkaks saamise õpik. Kolmas täiendatud trükk", author: "Jaak Roosaare", year: 2018, pages: 416},
