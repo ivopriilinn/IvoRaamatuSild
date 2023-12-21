@@ -1,8 +1,11 @@
-const app = require('express')()
+const express = require('express')
+const app = express()
 const port = 8080
 const swaggerUi = require('swagger-ui-express')
 const yamljs = require('yamljs')
 const swaggerDocument = yamljs.load('./docs/swagger.yaml')
+
+app.use(express.json())
 
 const books = [
     {id: 1, name:"Rikkaks saamise õpik. Kolmas täiendatud trükk", author: "Jaak Roosaare", year: 2018, pages: 416},
@@ -18,6 +21,17 @@ app.get('/books/:id', (req, res) => {
         return res.status(404).send({error: "Book not found"})
     }
     res.send(books[req.params.id - 1])
+})
+
+app.post('/books', (req, res) => {
+    books.push({
+        id: books.length + 1,
+        name: req.body.name,
+        year: req.body.year,
+        pages: req.body.pages
+    })
+
+    res.end()
 })
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
