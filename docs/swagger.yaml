@@ -35,6 +35,26 @@ paths:
                     description: Returns a list of books
             summary: Get a list of all books
             description: Returns a list of all books in API
+        post:
+            requestBody:
+                description: A new book to be created.
+                required: true
+            tags:
+                - new-book
+            responses:
+                '201':
+                    description: Created a new book
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                ERROR:
+                                    value: Book could not be created
+                    description: One or all params are missing.
+            summary: Creates a book
+            description: Creates a new book
     '/books/{id}':
         get:
             tags:
@@ -50,7 +70,7 @@ paths:
                             examples:
                                 Full details of a book:
                                     value: >-
-                                        {id: 3, name:"The Bear and The Nightingale", author: "Katherine
+                                        {id: 3, title:"The Bear and The Nightingale", author: "Katherine
                                         Arden", year: 2017, pages: 3014}
                     description: Returns full details of a given id book
                 '404':
@@ -64,6 +84,17 @@ paths:
                     description: Book was not found in books array
             operationId: id
             description: Returns full details of a given id book
+        parameters:
+            -
+                examples:
+                    Id:
+                        value: '35'
+                name: id
+                description: Unique book identifier
+                schema:
+                    type: integer
+                in: path
+                required: true
 components:
     schemas:
         error:
@@ -75,3 +106,28 @@ components:
                     type: string
             example:
                 error: Error message.
+        new-book:
+            title: Root Type for new-book
+            description: ''
+            required:
+                - author
+                - pages
+                - title
+                - year
+            type: object
+            properties:
+                author:
+                    type: string
+                year:
+                    format: int32
+                    type: integer
+                pages:
+                    format: int32
+                    type: integer
+                title:
+                    type: string
+            example:
+                name: Deep Work
+                author: Cal Newport
+                year: 2016
+                pages: 305

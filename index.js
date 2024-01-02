@@ -8,9 +8,9 @@ const swaggerDocument = yamljs.load('./docs/swagger.yaml')
 app.use(express.json())
 
 const books = [
-    {id: 1, name:"Rikkaks saamise õpik. Kolmas täiendatud trükk", author: "Jaak Roosaare", year: 2018, pages: 416},
-    {id: 2, name:"Pride and Prejudice", author: "Jane Austen", year: 2008, pages: 480},
-    {id: 3, name:"The Bear and The Nightingale", author: "Katherine Arden", year: 2017, pages: 3014}
+    {id: 1, title:"Rikkaks saamise õpik. Kolmas täiendatud trükk", author: "Jaak Roosaare", year: 2018, pages: 416},
+    {id: 2, title:"Pride and Prejudice", author: "Jane Austen", year: 2008, pages: 480},
+    {id: 3, title:"The Bear and The Nightingale", author: "Katherine Arden", year: 2017, pages: 3014}
 ]
 app.get('/books', (req, res) => {
     res.send(books)
@@ -24,14 +24,23 @@ app.get('/books/:id', (req, res) => {
 })
 
 app.post('/books', (req, res) => {
-    books.push({
+    if (!req.body.title || !req.body.author || !req.body.year || !req.body.pages) {
+        return res.status(400).send({ error: "One or all parameters are missing" })
+    }
+
+    let book = ({
         id: books.length + 1,
-        name: req.body.name,
+        title: req.body.title,
+        author: req.body.author,
         year: req.body.year,
         pages: req.body.pages
     })
 
-    res.end()
+    books.push(book)
+
+    res.status(201)
+        .location(`${getBaseUrl(req)}/books/${books.length}`)
+        .send(book)
 })
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
@@ -39,3 +48,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.listen(port, () => {
     console.log(`API up at: http://localhost:${port}`)
 })
+
+function getBaseUrl(req) {
+    return req.connection && req.connection.encrypted ? 'https' : 'http' + `://${req.headers.host}`
+}
