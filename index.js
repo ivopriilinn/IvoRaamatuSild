@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -9,6 +10,7 @@ const swaggerDocument = yamljs.load('./docs/swagger.yaml')
 app.use(cors())
 app.use(express.json())
 
+require("./routes/app_routes")(app)
 const books = [
     {id: 1, title:"Rikkaks saamise õpik. Kolmas täiendatud trükk", author: "Jaak Roosaare", year: 2018, pages: 416},
     {id: 2, title:"Pride and Prejudice", author: "Jane Austen", year: 2008, pages: 480},
@@ -58,7 +60,7 @@ app.delete('/books/:id', (req, res) => {
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`API up at: http://localhost:${port}`)
 })
 
