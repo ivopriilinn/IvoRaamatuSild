@@ -1,5 +1,8 @@
 const bookController = require("../controllers/bookController")
 
 module.exports = (app) => {
-    app.route("/books").get(bookController.getAll)
+    app.route("/books")
+        .get(bookController.getAll)
+        .post(bookController.createNew)
 }
+
