@@ -17,7 +17,9 @@ users = [
     {id: 1, firstName:"Tiit", lastName: "Kääpa", email: "tiitkaapa@desperado.org", phoneNumber: `"+37255123223"},
     {id: 2, firstName:"Teet", lastName: "Kääpa", email: "teetkaapa@desperado.org", phoneNumber: `"+37253987654"},
     {id: 3, firstName:"Heli", lastName: "Kopter", email: "helikopter@lennuakadeemia.eu", phoneNumber: `"+37251555666"},
-    {id: 4, firstName:"Jüriarrak", lastName: "Park", email: "jyriarrakpark@hot.ee", phoneNumber: `"+37250007007"}
+    {id: 5, firstName:"Priit", lastName: "Priidik", email: "priitpriidik@priidu.com", phoneNumber: `"+37251555666"},
+    {id: 6, firstName:"Heino", lastName: "Onu", email: "onuheino@johhaidii.nl", phoneNumber: `"+37251555666"},
+    {id: 7, firstName:"Jüriarrak", lastName: "Park", email: "jyriarrakpark@hot.ee", phoneNumber: `"+37250007007"}
 ]
 
 app.get('/users', (req, res) => {res.send(users)})
