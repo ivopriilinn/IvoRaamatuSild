@@ -12,6 +12,7 @@ app.use(express.json())
 
 require("./routes/app_routes")(app)
 
+//andmetabel users kohta
 users = [
     {id: 1, firstName:"Tiit", lastName: "Kääpa", email: "tiitkaapa@desperado.org", phoneNumber: `"+37255123223"},
     {id: 2, firstName:"Teet", lastName: "Kääpa", email: "teetkaapa@desperado.org", phoneNumber: `"+37253987654"},
@@ -20,6 +21,7 @@ users = [
 ]
 
 app.get('/users', (req, res) => {res.send(users)})
+
 
 app.get('/users/:id', (req, res) => {
     if (typeof users[req.params.id - 1] === 'undefined') {
