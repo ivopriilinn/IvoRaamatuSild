@@ -19,7 +19,7 @@ users = [
     {id: 3, firstName:"Heli", lastName: "Kopter", email: "helikopter@lennuakadeemia.eu", phoneNumber: `"+37251555666"},
     {id: 5, firstName:"Priit", lastName: "Priidik", email: "priitpriidik@priidu.com", phoneNumber: `"+37251555666"},
     {id: 6, firstName:"Heino", lastName: "Onu", email: "onuheino@johhaidii.nl", phoneNumber: `"+37251555666"},
-    {id: 7, firstName:"Jüriarrak", lastName: "Park", email: "jyriarrakpark@hot.ee", phoneNumber: `"+37250007007"}
+    {id: 7, firstName:"Jüriarrak", lastName: "Park", email: "jyriarrakpark@hot.ee", phoneNumber: `"+37250007008"}
 ]
 
 app.get('/users', (req, res) => {res.send(users)})
