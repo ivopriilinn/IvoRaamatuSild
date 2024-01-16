@@ -57,6 +57,7 @@ app.delete('/users/:id', (req, res) => {
 
     res.status(204).send({"No user found"})
 })
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.listen(port, async () => {
     console.log(`API up at: http://localhost:${port}`)
