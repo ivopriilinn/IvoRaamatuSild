@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet">
+    <title>Kasutajad</title>
+    <style>
+        body {
+            background color: brown
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Laenutajad</h1>
+
+<form id="userForm">
+    <label for="firstName">Eesnimi:</label>
+    <input type="text" id="firstName" name="firstName" required>
+
+    <label for="lastName">Perekonnanimi:</label>
+    <input type="text" id="lastName" name="lastName" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="phoneNumber">Telefoni Number:</label>
+    <input type="tel" id="phoneNumber" name="phoneNumber">
+
+    <button type="button" onclick="addUser()">Lisa Laenutaja</button>
+</form>
+
+<table id="userTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Eesnimi</th>
+        <th>Perekonnanimi</th>
+        <th>Email</th>
+        <th>Telefoni Number</th>
+        <th>Toiming</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- kuvab lugeja andmed -->
+    </tbody>
+</table>
+
+<script>
+    async function getUsers() {
+        const response = await fetch('http://localhost:8080/users');
+        const users = await response.json();
+        return users;
+    }
+
+    async function renderUsers() {
+        const users = await getUsers();
+        const tableBody = document.querySelector('#userTable tbody');
+        tableBody.innerHTML = '';
+
+        users.forEach(user => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.firstName}</td>
+                <td>${user.lastName}</td>
+                <td>${user.email}</td>
+                <td>${user.phoneNumber || '-'}</td>
+                <td>
+                    <button onclick="editUser(${user.id})">Edit</button>
+                    <button onclick="deleteUser(${user.id})">Delete</button>
+                </td>
+            `;
+        });
+    }
+
+    async function addUser() {
+        const form = document.getElementById('userForm');
+        const formData = new FormData(form);
+
+        const response = await fetch('http://localhost:8080/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(Object.fromEntries(formData)),
+        });
+
+        if (response.ok) {
+            form.reset();
+            renderUsers();
+        } else {
+            alert('Failed to add user. Please check the input data.');
+        }
+    }
+
+    async function deleteUser(userId) {
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            renderUsers();
+        } else {
+            alert('Failed to delete user. Please try again.');
+        }
+    }
+
+    function editUser(userId) {
+        // You can implement the edit functionality here
+        alert(`Editing user with ID ${userId}`);
+    }
+
+    // Initial render
+    renderUsers();
+</script>
+
+</body>
+</html>
