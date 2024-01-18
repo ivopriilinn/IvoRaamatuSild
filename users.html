@@ -7,7 +7,7 @@
     <title>Kasutajad</title>
     <style>
         body {
-            background color: brown
+            background-color: beige;
             font-family: Arial, sans-serif;
             margin: 20px;
         }
@@ -97,12 +97,15 @@
         const form = document.getElementById('userForm');
         const formData = new FormData(form);
 
+        var req_body = JSON.stringify(Object.fromEntries(formData))
+        console.log('req_body: ' + req_body)
+
         const response = await fetch('http://localhost:8080/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(Object.fromEntries(formData)),
+            body: req_body,
         });
 
         if (response.ok) {
