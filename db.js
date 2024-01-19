@@ -15,7 +15,7 @@ const sequelize = new Sequelize(
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.books = require("./models/Book.model")(sequelize, Sequelize);
+db.books = require("./raamatusild-api/models/Book.model")(sequelize, Sequelize);
 
 async function Sync() {
     await sequelize.sync({alter:true})

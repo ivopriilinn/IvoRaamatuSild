@@ -1,9 +1,9 @@
 const { Sequelize } = require("sequelize")
-const {db} = require("../db")
+const {db} = require("../../db")
 const Book = db.books
 
 exports.getAll = async (req, res) => {
-    const books = await Book.findAll({attributes:["title"]})
+    const books = await Book.findAll({attributes:["title", "author", "year", "pages"]})
     res.send(books)
 }
 
