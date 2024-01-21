@@ -15,6 +15,8 @@ exports.getById = async (req, res) => {
 exports.createNew = async (req, res) => {
     let book
 
+    console.log("Received Data:", req.body);
+
     try {
         book = await Book.create(req.body)
     } catch (error) {

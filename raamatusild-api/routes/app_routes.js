@@ -6,7 +6,7 @@ module.exports = (app) => {
         .post(bookController.createNew)
 
     app.route("/books/:id")
-    .get(bookController.getById)
-    //TODO
+        .get(bookController.getById)
+
 }
 
