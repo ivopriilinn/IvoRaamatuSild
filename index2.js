@@ -20,6 +20,7 @@ users = [
 ]
 
 app.get('/users.html', function(req, res) {
+  console.log('users.html requested')
   res.sendFile(__dirname + '/users.html');
 });
 
@@ -54,16 +55,22 @@ app.post('/users', (req, res) => {
         return res.status(400).send({ error: "One or all parameters are missing" })
     }
 
-//      // Ivo variant
-//    var new_id = 1
-//
-//    for (let i = 1; i <= users.length+1; i++) {
-//        for (let idx = 0; idx < users.length; idx++) {
-//            if (users[idx].id != new_id) {
-//                new_id =
-//            }
-//        }
-//    }
+      // Ivo variant
+    var new_id = 1
+
+    for (let i = 1; i <= users.length+1; i++) {
+        if (users[i].id != new_id) {
+                for (let idx = 0; idx < users.length; idx++) {
+                    if (users[idx].id == new_id) {
+
+                    }
+                    else {
+                          break
+                          }
+                  new_id += 1
+                }
+        }
+    }
 
 //    // variant 1
 //    var new_id
@@ -115,8 +122,8 @@ app.post('/users', (req, res) => {
         .send()
 })
 
-var server = app.listen(8080, function () {
-   var host = server.address().address
-   var port = server.address().port
+var host = '127.0.0.1'
+var port = 8080
+var server = app.listen(port, host, function () {
    console.log("Example app listening at http://%s:%s", host, port)
 })

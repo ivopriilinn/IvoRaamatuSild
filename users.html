@@ -46,7 +46,10 @@
     <label for="phoneNumber">Telefoni Number:</label>
     <input type="tel" id="phoneNumber" name="phoneNumber">
 
-    <button type="button" onclick="addUser()">Lisa Laenutaja</button>
+    <!-- Add a hidden input for storing the user ID -->
+    <input type="hidden" id="userId" name="userId">
+
+    <button type="button" onclick="addOrUpdateUser()">Sisesta</button>
 </form>
 
 <table id="userTable">
@@ -67,7 +70,7 @@
 
 <script>
     async function getUsers() {
-        const response = await fetch('http://localhost:8080/users');
+        const response = await fetch('users');
         const users = await response.json();
         return users;
     }
@@ -86,8 +89,8 @@
                 <td>${user.email}</td>
                 <td>${user.phoneNumber || '-'}</td>
                 <td>
-                    <button onclick="editUser(${user.id})">Edit</button>
-                    <button onclick="deleteUser(${user.id})">Delete</button>
+                    <button onclick="editUser(${user.id})">Muuda</button>
+                    <button onclick="deleteUser(${user.id})">Kustuta</button>
                 </td>
             `;
         });
@@ -97,10 +100,9 @@
         const form = document.getElementById('userForm');
         const formData = new FormData(form);
 
-        var req_body = JSON.stringify(Object.fromEntries(formData))
-        console.log('req_body: ' + req_body)
+        const req_body = JSON.stringify(Object.fromEntries(formData));
 
-        const response = await fetch('http://localhost:8080/users', {
+        const response = await fetch('users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,25 +114,60 @@
             form.reset();
             renderUsers();
         } else {
-            alert('Failed to add user. Please check the input data.');
+            alert('Kasutajat ei õnnestunud lisada. Palun kontrollige sisestatud andmeid.');
         }
     }
 
     async function deleteUser(userId) {
-        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+        const response = await fetch(`users/${userId}`, {
             method: 'DELETE',
         });
 
         if (response.ok) {
             renderUsers();
         } else {
-            alert('Failed to delete user. Please try again.');
+            alert('Kasutaja kustutamine ebaõnnestus. Palun proovige uuesti.');
         }
     }
 
     function editUser(userId) {
-        // You can implement the edit functionality here
-        alert(`Editing user with ID ${userId}`);
+        const form = document.getElementById('userForm');
+        const userToEdit = getUsers().find(user => user.id === userId);
+
+        // Populate the form with data for editing
+        form.elements['userId'].value = userToEdit.id;
+        form.elements['firstName'].value = userToEdit.firstName;
+        form.elements['lastName'].value = userToEdit.lastName;
+        form.elements['email'].value = userToEdit.email;
+        form.elements['phoneNumber'].value = userToEdit.phoneNumber || '';
+    }
+
+    async function addOrUpdateUser() {
+        const form = document.getElementById('userForm');
+        const formData = new FormData(form);
+
+        // If the userId input is present and has a value, it's an update
+        const isUpdate = formData.get('userId') !== '';
+
+        const req_body = JSON.stringify(Object.fromEntries(formData));
+
+        const url = isUpdate ? `users/${formData.get('userId')}` : 'users';
+        const method = isUpdate ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: req_body,
+        });
+
+        if (response.ok) {
+            form.reset();
+            renderUsers();
+        } else {
+            alert(`Kasutaja ${isUpdate ? 'muutmise' : 'lisamise'} ebaõnnestus. Palun kontrollige sisestatud andmeid.`);
+        }
     }
 
     // Initial render
