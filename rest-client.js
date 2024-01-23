@@ -24,21 +24,62 @@ const vue = Vue.createApp({
      createBook: async function () {
       console.log ("Create book triggered");
    
-      const response = await fetch('http://localhost:8080/books', {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(this.newBookForm),
-      }).then(response => {
-         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json();
-      }).then(book => {
-         this.books.push(book);
-         this.resetNewBookForm();
-      })
+         const response = await fetch('http://localhost:8080/books', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.newBookForm),
+            }).then(response => {
+               if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+               }
+               return response.json();
+            }).then(book => {
+               this.books.push(book);
+               this.resetNewBookForm();
+            })
+      },
+
+      updateBook: async function (bookId, updatedBookData) {
+         try {
+           const response = await fetch(`http://localhost:8080/books/${bookId}`, {
+             method: 'PUT',
+             headers: {
+               'Content-Type': 'application/json',
+             },
+             body: JSON.stringify(updatedBookData),
+           });
+       
+           if (response.ok) {
+             const updatedBook = await response.json();
+             console.log('Book updated:', updatedBook);
+           } else {
+             console.error('Failed to update the book');
+           }
+         } catch (error) {
+           console.error('Error updating book:', error);
+         }
+       },
+
+      deleteBook: async function (bookId) {
+         try {
+           const response = await fetch(`http://localhost:8080/books/${bookId}`, {
+             method: 'DELETE',
+             headers: {
+               'Content-Type': 'application/json',
+             },
+           });
+   
+           if (response.ok) {
+             this.books = this.books.filter(book => book.id !== bookId);
+           } else {
+             console.error('Failed to delete the book');
+           }
+         } catch (error) {
+           console.error('Error:', error);
+         }
+      }
    }
-  }
+
 }).mount('#app');

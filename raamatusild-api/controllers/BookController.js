@@ -60,7 +60,7 @@ exports.updateById = async (req, res) => {
 exports.deleteById = async (req, res) => {
     let result
     try {
-        result = await Book.destroy({where: })
+        result = await Book.destroy({where: {id: req.params.id}})
     } catch (error) {
         console.log("BooksDelete: ", error)
         res.status(500).send({error:"Something has gone wrong with the delete"})
