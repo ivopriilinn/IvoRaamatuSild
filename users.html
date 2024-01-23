@@ -46,10 +46,7 @@
     <label for="phoneNumber">Telefoni Number:</label>
     <input type="tel" id="phoneNumber" name="phoneNumber">
 
-    <!-- Add a hidden input for storing the user ID -->
-    <input type="hidden" id="userId" name="userId">
-
-    <button type="button" onclick="addOrUpdateUser()">Sisesta</button>
+    <button type="button" onclick="addUser()">Sisesta kasutaja</button>
 </form>
 
 <table id="userTable">
@@ -89,7 +86,7 @@
                 <td>${user.email}</td>
                 <td>${user.phoneNumber || '-'}</td>
                 <td>
-                    <button onclick="editUser(${user.id})">Muuda</button>
+                    <button onclick="editUser(${user.id}, this)">Muuda</button>
                     <button onclick="deleteUser(${user.id})">Kustuta</button>
                 </td>
             `;
@@ -100,14 +97,12 @@
         const form = document.getElementById('userForm');
         const formData = new FormData(form);
 
-        const req_body = JSON.stringify(Object.fromEntries(formData));
-
         const response = await fetch('users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: req_body,
+            body: JSON.stringify(Object.fromEntries(formData)),
         });
 
         if (response.ok) {
@@ -130,43 +125,58 @@
         }
     }
 
-    function editUser(userId) {
-        const form = document.getElementById('userForm');
-        const userToEdit = getUsers().find(user => user.id === userId);
+    function editUser(userId, button) {
+        const row = button.closest('tr');
+        const cells = row.children;
+        const editButton = cells[5].querySelector('button');
 
-        // Populate the form with data for editing
-        form.elements['userId'].value = userToEdit.id;
-        form.elements['firstName'].value = userToEdit.firstName;
-        form.elements['lastName'].value = userToEdit.lastName;
-        form.elements['email'].value = userToEdit.email;
-        form.elements['phoneNumber'].value = userToEdit.phoneNumber || '';
+        if (editButton.disabled) {
+            // Already in edit mode
+            return;
+        }
+
+        editButton.disabled = true;
+
+        for (let i = 1; i < 5; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = cells[i].textContent;
+            cells[i].textContent = '';
+            cells[i].appendChild(input);
+        }
+
+        const applyButton = document.createElement('button');
+        applyButton.textContent = 'Kinnita';
+        applyButton.onclick = function () {
+            applyChanges(userId, row);
+        };
+
+        cells[5].appendChild(applyButton);
     }
 
-    async function addOrUpdateUser() {
-        const form = document.getElementById('userForm');
-        const formData = new FormData(form);
+    async function applyChanges(userId, row) {
+        const cells = row.children;
 
-        // If the userId input is present and has a value, it's an update
-        const isUpdate = formData.get('userId') !== '';
+        const updatedUser = {
+            id: userId,
+            firstName: cells[1].querySelector('input').value,
+            lastName: cells[2].querySelector('input').value,
+            email: cells[3].querySelector('input').value,
+            phoneNumber: cells[4].querySelector('input').value || null,
+        };
 
-        const req_body = JSON.stringify(Object.fromEntries(formData));
-
-        const url = isUpdate ? `users/${formData.get('userId')}` : 'users';
-        const method = isUpdate ? 'PUT' : 'POST';
-
-        const response = await fetch(url, {
-            method: method,
+        const response = await fetch(`users/${userId}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: req_body,
+            body: JSON.stringify(updatedUser),
         });
 
         if (response.ok) {
-            form.reset();
             renderUsers();
         } else {
-            alert(`Kasutaja ${isUpdate ? 'muutmise' : 'lisamise'} ebaõnnestus. Palun kontrollige sisestatud andmeid.`);
+            alert('Kasutaja muutmine ebaõnnestus. Palun proovige uuesti.');
         }
     }
 

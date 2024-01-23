@@ -120,7 +120,21 @@ app.post('/users', (req, res) => {
     res.status(201)
         //.location(`${getBaseUrl(req)}/users/${users.length}`)
         .send()
-})
+    })
+    app.put('/users/:id', (req, res) => {
+      const index = users.findIndex(u => u.id == req.params.id);
+      if (index !== -1) {
+        users[index] = {
+          id: req.params.id,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          phoneNumber: req.body.phoneNumber || null,
+        };
+        res.status(200).send();
+      } else {
+        res.status(404).send({ error: 'User not found' });
+      }
 
 var host = '127.0.0.1'
 var port = 8080
