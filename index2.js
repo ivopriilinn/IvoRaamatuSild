@@ -20,6 +20,7 @@ users = [
 ]
 
 app.get('/users.html', function(req, res) {
+  res.setHeader('Content-Type', 'text/html'); // Set Content-Type to 'text/html'
   console.log('users.html requested')
   res.sendFile(__dirname + '/users.html');
 });
@@ -55,45 +56,6 @@ app.post('/users', (req, res) => {
         return res.status(400).send({ error: "One or all parameters are missing" })
     }
 
-      // Ivo variant
-    var new_id = 1
-
-    for (let i = 1; i <= users.length+1; i++) {
-        if (users[i].id != new_id) {
-                for (let idx = 0; idx < users.length; idx++) {
-                    if (users[idx].id == new_id) {
-
-                    }
-                    else {
-                          break
-                          }
-                  new_id += 1
-                }
-        }
-    }
-
-//    // variant 1
-//    var new_id
-//    var i = 1
-//    var is_ok
-//    while (true) {
-//        is_ok = true
-//        for (let j = 0; j < users.length; j++) {
-//            if (users[j].id == i) {
-//                is_ok = false
-//                break
-//            }
-//        }
-//        if (is_ok) {
-//            new_id = i
-//            break
-//        } else {
-//            i++
-//            continue
-//        }
-//    }
-
-    // variant 2
     var new_id = -1
     var i = 1
     while (true) {
@@ -118,7 +80,6 @@ app.post('/users', (req, res) => {
     }
     users.push(user)
     res.status(201)
-        //.location(`${getBaseUrl(req)}/users/${users.length}`)
         .send()
     })
     app.put('/users/:id', (req, res) => {
@@ -135,7 +96,7 @@ app.post('/users', (req, res) => {
       } else {
         res.status(404).send({ error: 'User not found' });
       }
-
+})
 var host = '127.0.0.1'
 var port = 8080
 var server = app.listen(port, host, function () {
