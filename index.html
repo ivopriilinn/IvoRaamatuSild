@@ -62,12 +62,16 @@
               <th>Author</th>
               <th>Year</th>
               <th>Pages</th>
+              <th></th>
           </tr>
           <tr v-for="book in books">
               <td @click="getBook(book.id)">{{ book.title }}</td>
               <td>{{ book.author }}</td>
               <td>{{ book.year }}</td>
               <td>{{ book.pages }}</td>
+              <td>
+                <button class="btn btn-secondary" @click="openUpdateModal(book)">Update</button>
+              </td>
           </tr>
       </table>
 
@@ -88,7 +92,6 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-dark" data-bs-target="#updateBookModal" data-bs-dismiss="modal">Update</button>
                 <button type="button" class="btn btn-danger" @click="deleteBook(bookInModal.id)" data-bs-dismiss="modal">Delete</button>
               </div>
             </div>
