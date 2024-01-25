@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasutajad</title>
+    <style>
+        body {
+            background-color: beige;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Laenutajad</h1>
+
+<form id="userForm">
+    <label for="first_name">Eesnimi:</label>
+    <input type="text" id="first_name" name="first_name" required>
+
+    <label for="last_name">Perekonnanimi:</label>
+    <input type="text" id="last_name" name="last_name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="telephone">Telefoni Number:</label>
+    <input type="tel" id="telephone" name="telephone">
+
+    <button type="button" onclick="addUser()">Sisesta kasutaja</button>
+</form>
+
+<table id="userTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Eesnimi</th>
+        <th>Perekonnanimi</th>
+        <th>Email</th>
+        <th>Telefoni Number</th>
+        <th>Toiming</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- kuvab lugeja andmed -->
+    </tbody>
+</table>
+
+<script>
+    async function getUser() {
+        const response = await fetch('http://localhost:8080/users');
+        const user = await response.json();
+        return user;
+    }
+
+    async function renderUser() {
+        const user = await getUser();
+        const tableBody = document.querySelector('#userTable tbody');
+        tableBody.innerHTML = '';
+
+        user.forEach(user => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.first_name}</td>
+                <td>${user.last_name}</td>
+                <td>${user.email}</td>
+                <td>${user.telephone || '-'}</td>
+                <td>
+                    <button onclick="editUser(${user.id}, this)">Muuda</button>
+                    <button onclick="deleteUser(${user.id})">Kustuta</button>
+                </td>
+            `;
+        });
+    }
+
+    async function addUser() {
+        const form = document.getElementById('userForm');
+        const formData = new FormData(form);
+
+        const response = await fetch('http://localhost:8080/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(Object.fromEntries(formData)),
+        });
+
+        if (response.ok) {
+            form.reset();
+            renderUser();
+        } else {
+            alert('Kasutajat ei õnnestunud lisada. Palun kontrollige sisestatud andmeid.');
+        }
+    }
+
+    async function deleteUser(userId) {
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            renderUser();
+        } else {
+            alert('Kasutaja kustutamine ebaõnnestus. Palun proovige uuesti.');
+        }
+    }
+
+    function editUser(userId, button) {
+        const row = button.closest('tr');
+        const cells = row.children;
+        const editButton = cells[5].querySelector('button');
+
+        if (editButton.disabled) {
+            // Already in edit mode
+            return;
+        }
+
+        editButton.disabled = true;
+
+        for (let i = 1; i < 5; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = cells[i].textContent;
+            cells[i].textContent = '';
+            cells[i].appendChild(input);
+        }
+
+        const applyButton = document.createElement('button');
+        applyButton.textContent = 'Kinnita';
+        applyButton.onclick = function () {
+            applyChanges(userId, row);
+        };
+
+        cells[5].appendChild(applyButton);
+    }
+
+    async function applyChanges(userId, row) {
+        const cells = row.children;
+
+        const updatedUser = {
+            id: userId,
+            first_name: cells[1].querySelector('input').value,
+            last_name: cells[2].querySelector('input').value,
+            email: cells[3].querySelector('input').value,
+            telephone: cells[4].querySelector('input').value || null,
+        };
+
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUser),
+        });
+
+        if (response.ok) {
+            renderUser();
+        } else {
+            alert('Kasutaja muutmine ebaõnnestus. Palun proovige uuesti.');
+        }
+    }
+
+    // Initial render
+    renderUser();
+</script>
+
+</body>
+</html>
