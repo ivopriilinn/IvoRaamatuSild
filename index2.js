@@ -18,7 +18,7 @@ users = [
     {id: 6, firstName:"Heino", lastName: "Onu", email: "onuheino@johhaidii.nl", phoneNumber: "+37251555666"},
     {id: 10, firstName:"Jüriarrak", lastName: "Park", email: "jyriarrakpark@hot.ee", phoneNumber: "+37250007008"}
 ]
-
+//==========================================================================
 app.get('/users.html', function(req, res) {
   res.setHeader('Content-Type', 'text/html'); // Set Content-Type to 'text/html'
   console.log('users.html requested')
@@ -27,6 +27,7 @@ app.get('/users.html', function(req, res) {
 
 app.get('/users', (req, res) => {res.send(users)})
 
+//==========================================================================
 app.get('/users/:id', (req, res) => {
     for (let i = 0; i < users.length; i++) {
         //console.log(users[i].id)
@@ -37,7 +38,7 @@ app.get('/users/:id', (req, res) => {
     }
     return res.status(404).send({error: "User not found"})
 })
-
+//==========================================================================
 app.delete('/users/:id', (req, res) => {
     for (let i = 0; i < users.length; i++) {
         //console.log(users[i].id)
@@ -49,7 +50,7 @@ app.delete('/users/:id', (req, res) => {
     }
     return res.status(404).send({error: "User not found"})
 })
-
+//==========================================================================
 
 app.post('/users', (req, res) => {
     if (!req.body.firstName || !req.body.lastName || !req.body.email) {
@@ -97,6 +98,7 @@ app.post('/users', (req, res) => {
         res.status(404).send({ error: 'User not found' });
       }
 })
+//==========================================================================
 var host = '127.0.0.1'
 var port = 8080
 var server = app.listen(port, host, function () {

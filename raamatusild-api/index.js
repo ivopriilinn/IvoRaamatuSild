@@ -1,16 +1,18 @@
-//require("dotenv").config()
+require("dotenv").config()
 const express = require('express')
-//const cors = require('cors')
+const cors = require('cors')
 const app = express()
 const port = 8080
 const swaggerUi = require('swagger-ui-express')
 const yamljs = require('yamljs')
 const swaggerDocument = yamljs.load('./docs/swagger.yaml')
 
-//app.use(cors())
+app.use(cors())
 app.use(express.json())
 
 require("./routes/app_routes")(app)
+
+/*
 const books = [
     {id: 1, title:"Rikkaks saamise õpik. Kolmas täiendatud trükk", author: "Jaak Roosaare", year: 2018, pages: 416},
     {id: 2, title:"Pride and Prejudice", author: "Jane Austen", year: 2008, pages: 480},
@@ -22,6 +24,7 @@ app.get('/books', (req, res) => {
 })
 
 app.get('/books/:id', (req, res) => {
+
     if (typeof books[req.params.id - 1] === 'undefined') {
         return res.status(404).send({error: "Book not found"})
     }
@@ -57,6 +60,7 @@ app.delete('/books/:id', (req, res) => {
 
     res.status(204).send({error: "No content"})
 })
+*/
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
