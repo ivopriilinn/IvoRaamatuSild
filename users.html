@@ -33,17 +33,17 @@
 <h1>Laenutajad</h1>
 
 <form id="userForm">
-    <label for="firstName">Eesnimi:</label>
-    <input type="text" id="firstName" name="firstName" required>
+    <label for="first_name">Eesnimi:</label>
+    <input type="text" id="first_name" name="first_name" required>
 
-    <label for="lastName">Perekonnanimi:</label>
-    <input type="text" id="lastName" name="lastName" required>
+    <label for="last_name">Perekonnanimi:</label>
+    <input type="text" id="last_name" name="last_name" required>
 
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required>
 
-    <label for="phoneNumber">Telefoni Number:</label>
-    <input type="tel" id="phoneNumber" name="phoneNumber">
+    <label for="telephone">Telefoni Number:</label>
+    <input type="tel" id="telephone" name="telephone">
 
     <button type="button" onclick="addUser()">Sisesta kasutaja</button>
 </form>
@@ -65,25 +65,25 @@
 </table>
 
 <script>
-    async function getUsers() {
-        const response = await fetch('/users');
-        const users = await response.json();
-        return users;
+    async function getUser() {
+        const response = await fetch('http://localhost:8080/users');
+        const user = await response.json();
+        return user;
     }
 
-    async function renderUsers() {
-        const users = await getUsers();
+    async function renderUser() {
+        const user = await getUser();
         const tableBody = document.querySelector('#userTable tbody');
         tableBody.innerHTML = '';
 
-        users.forEach(user => {
+        user.forEach(user => {
             const row = tableBody.insertRow();
             row.innerHTML = `
                 <td>${user.id}</td>
-                <td>${user.firstName}</td>
-                <td>${user.lastName}</td>
+                <td>${user.first_name}</td>
+                <td>${user.last_name}</td>
                 <td>${user.email}</td>
-                <td>${user.phoneNumber || '-'}</td>
+                <td>${user.telephone || '-'}</td>
                 <td>
                     <button onclick="editUser(${user.id}, this)">Muuda</button>
                     <button onclick="deleteUser(${user.id})">Kustuta</button>
@@ -96,7 +96,7 @@
         const form = document.getElementById('userForm');
         const formData = new FormData(form);
 
-        const response = await fetch('users', {
+        const response = await fetch('http://localhost:8080/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -106,19 +106,19 @@
 
         if (response.ok) {
             form.reset();
-            renderUsers();
+            renderUser();
         } else {
             alert('Kasutajat ei õnnestunud lisada. Palun kontrollige sisestatud andmeid.');
         }
     }
 
     async function deleteUser(userId) {
-        const response = await fetch(`/users/${userId}`, {
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
             method: 'DELETE',
         });
 
         if (response.ok) {
-            renderUsers();
+            renderUser();
         } else {
             alert('Kasutaja kustutamine ebaõnnestus. Palun proovige uuesti.');
         }
@@ -158,13 +158,13 @@
 
         const updatedUser = {
             id: userId,
-            firstName: cells[1].querySelector('input').value,
-            lastName: cells[2].querySelector('input').value,
+            first_name: cells[1].querySelector('input').value,
+            last_name: cells[2].querySelector('input').value,
             email: cells[3].querySelector('input').value,
-            phoneNumber: cells[4].querySelector('input').value || null,
+            telephone: cells[4].querySelector('input').value || null,
         };
 
-        const response = await fetch(`/users/${userId}`, {
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -173,14 +173,14 @@
         });
 
         if (response.ok) {
-            renderUsers();
+            renderUser();
         } else {
             alert('Kasutaja muutmine ebaõnnestus. Palun proovige uuesti.');
         }
     }
 
     // Initial render
-    renderUsers();
+    renderUser();
 </script>
 
 </body>

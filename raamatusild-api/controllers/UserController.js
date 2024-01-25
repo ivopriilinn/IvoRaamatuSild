@@ -1,82 +1,71 @@
-const { Sequelize } = require("sequelize")
+//const { User } = require('../models/User.model');
 const {db} = require("../../db")
-const Users = db.users
+const User = db.users
 
+// Controller to get all user
 exports.getAll = async (req, res) => {
-    const users = await Users.findAll({attributes:["id","firstName", "lastName", "email", "phoneNumber"]})
-    res.send(users)
-}
+    try {
+        const user = await User.findAll();
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
+// Controller to get a user by ID
 exports.getById = async (req, res) => {
-    const users = await Users.findByPk(req.params.id)
-    res.send(users)
-}
-
-exports.createNew = async (req, res) => {
-    let user
-
-    console.log("Received Data:", req.body);
-
     try {
-        user = await Users.create(req.body)
-    } catch (error) {
-        if (error instanceof db.Sequelize.ValidationError) {
-            console.log(error)
-            res.status(400).send({"error":error.errors.map((item) =>
-            item.message)})
-        } else {
-            console.log("UsersCreate: ", error)
-            res.status(500).send({"error":"Something has gone wrong"})
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
         }
-        return
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user by ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-    res
-        .status(201)
-        .location(`${getBaseUrl(req)}/users/${user.id}`)
-        .json(user);
-        console.log(user)
-}
+};
 
+// Controller to create a new user
+exports.createNew = async (req, res) => {
+    try {
+        const newUser = await User.create(req.body);
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error('Error creating new user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+// Controller to update a user by ID
 exports.updateById = async (req, res) => {
-    let result
-    delete req.body.id
     try {
-        result = await Users.update(req.body,{where: {id: req.params.id}})
+        const [updatedRows] = await User.update(req.body, { where: { id: req.params.id } });
+        if (updatedRows === 0) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        const updatedUser = await User.findByPk(req.params.id);
+        res.status(200).json(updatedUser);
     } catch (error) {
-        console.log("UsersUpdate: ", error)
-        res.status(500).send({error:"Something has gone wrong with the update"})
-        return
+        console.error('Error updating user by ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-    if (result === 0) {
-        res.status(404).send({error:"User not found"})
-        return
-    }
-    const user = await Users.findByPk(req.params.id)
-    res.status(200)
-    .location(`${getBaseUrl(req)}/users/${user.id}`)
-    .json(user)
-}
+};
 
+// Controller to delete a user by ID
 exports.deleteById = async (req, res) => {
-    let result
     try {
-        result = await Users.destroy({where: {id: req.params.id}})
+        const deletedRows = await User.destroy({ where: { id: req.params.id } });
+        if (deletedRows === 0) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        res.status(204).send();
     } catch (error) {
-        console.log("UsersDelete: ", error)
-        res.status(500).send({error:"Something has gone wrong with deleting the user"})
-        return
+        console.error('Error deleting user by ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-    if (result === 0) {
-        res.status(404).send({error:"User not found"})
-        return
-    }
-    res
-    .status(204).send()
-}
-
-getBaseUrl = (request) => {
-    return (
-        (request.connection && request.connection.encryption ? "https" : "http") +
-        `://${request.headers.host}`
-    )
-}
+};

@@ -18,13 +18,10 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.books = require("./raamatusild-api/models/Book.model")(sequelize, Sequelize);
-db.users = require("./raamatusild-api/models/Users.model")(sequelize, Sequelize);
+db.users = require("./raamatusild-api/models/User.model")(sequelize, Sequelize);
 async function Sync() {
     await sequelize.sync({alter:true})
 }
 
-//async function Sync() {
-//    await sequelize.sync({alter:true})
-//}
 
 module.exports = { db, Sync };

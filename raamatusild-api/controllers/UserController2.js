@@ -1,73 +1,73 @@
-//const { Sequelize } = require("sequelize")
+const { Sequelize } = require("sequelize")
 const {db} = require("../../db")
-const Book = db.books
+const Users = db.users
 
 exports.getAll = async (req, res) => {
-    const books = await Book.findAll({attributes:["id","title", "author", "year", "pages"]})
-    res.send(books)
+    const users = await Users.findAll({attributes:["id","firstName", "lastName", "email", "phoneNumber"]})
+    res.send(users)
 }
 
 exports.getById = async (req, res) => {
-    const books = await Book.findByPk(req.params.id)
-    res.send(books)
+    const users = await Users.findByPk(req.params.id)
+    res.send(users)
 }
 
 exports.createNew = async (req, res) => {
-    let book
+    let user
 
     console.log("Received Data:", req.body);
 
     try {
-        book = await Book.create(req.body)
+        user = await Users.create(req.body)
     } catch (error) {
         if (error instanceof db.Sequelize.ValidationError) {
             console.log(error)
-            res.status(400).send({"error":error.errors.map((item) => 
+            res.status(400).send({"error":error.errors.map((item) =>
             item.message)})
         } else {
-            console.log("BooksCreate: ", error)
+            console.log("UsersCreate: ", error)
             res.status(500).send({"error":"Something has gone wrong"})
         }
         return
     }
     res
         .status(201)
-        .location(`${getBaseUrl(req)}/books/${book.id}`)
-        .json(book);
-        console.log(book)
+        .location(`${getBaseUrl(req)}/users/${user.id}`)
+        .json(user);
+        console.log(user)
 }
 
 exports.updateById = async (req, res) => {
     let result
     delete req.body.id
     try {
-        result = await Book.update(req.body,{where: {id: req.params.id}})
+        result = await Users.update(req.body,{where: {id: req.params.id}})
     } catch (error) {
-        console.log("BooksUpdate: ", error)
+        console.log("UsersUpdate: ", error)
         res.status(500).send({error:"Something has gone wrong with the update"})
         return
     }
     if (result === 0) {
-        res.status(404).send({error:"Book not found"})
+        res.status(404).send({error:"User not found"})
         return
     }
-    const book = await Book.findByPk(req.params.id)
+    const user = await Users.findByPk(req.params.id)
     res.status(200)
-    .location(`${getBaseUrl(req)}/books/${book.id}`)
-    .json(book)
+    .location(`${getBaseUrl(req)}/users/${user.id}`)
+    .json(user)
 }
 
 exports.deleteById = async (req, res) => {
     let result
     try {
-        result = await Book.destroy({where: {id: req.params.id}})
+        result = await Users.destroy({where: {id: req.params.id}})
     } catch (error) {
-        console.log("BooksDelete: ", error)
-        res.status(500).send({error:"Something has gone wrong with the delete"})
+        console.log("UsersDelete: ", error)
+        res.status(500).send({error:"Something has gone wrong with deleting the user"})
         return
     }
     if (result === 0) {
-        res.status(404).send({error:"Game not found"})
+        res.status(404).send({error:"User not found"})
         return
     }
     res
