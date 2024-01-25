@@ -1,4 +1,5 @@
 const bookController = require("../controllers/bookController")
+const userController = require("../controllers/userController");
 
 module.exports = (app) => {
     app.route("/books")
@@ -10,5 +11,8 @@ module.exports = (app) => {
         .put(bookController.updateById)
         .delete(bookController.deleteById)
 
+    // Users routing
+    app.route("/users")
+        .get(userController.getAll)
 }
 
