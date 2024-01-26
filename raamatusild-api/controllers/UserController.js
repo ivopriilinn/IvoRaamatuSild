@@ -54,3 +54,17 @@ exports.updateById = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+// Controller to delete a user by ID
+exports.deleteById = async (req, res) => {
+    try {
+        const deletedRows = await User.destroy({ where: { id: req.params.id } });
+        if (deletedRows === 0) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting user by ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
