@@ -14,5 +14,9 @@ module.exports = (app) => {
     // Users routing
     app.route("/users")
         .get(userController.getAll)
+        
+        
+    app.route("/users/:id")
+        .get(userController.getById)
 }
 
