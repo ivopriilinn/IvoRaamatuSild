@@ -27,3 +27,14 @@ exports.getById = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+// Controller to create a new user
+exports.createNew = async (req, res) => {
+    try {
+        const newUser = await User.create(req.body);
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error('Error creating new user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
