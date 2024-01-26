@@ -38,3 +38,19 @@ exports.createNew = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+// Controller to update a user by ID
+exports.updateById = async (req, res) => {
+    try {
+        const [updatedRows] = await User.update(req.body, { where: { id: req.params.id } });
+        if (updatedRows === 0) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        const updatedUser = await User.findByPk(req.params.id);
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error('Error updating user by ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
